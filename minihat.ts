@@ -2,12 +2,8 @@ import * as ethers from 'ethers'
 import { BigNumber } from 'ethers'
 import { BigDecimal } from 'bigdecimal'
 
-import * as _chai from 'chai'
-import * as chaipromise from 'chai-as-promised'
-
-_chai.use(chaipromise)
-
-export const chai = _chai
+export const chai = require('chai');
+chai.use(require('chai-as-promised'))
 export const want = chai.expect
 
 export function N (n: number): BigNumber {

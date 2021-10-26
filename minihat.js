@@ -40,10 +40,8 @@ exports.revert = exports.snapshot = exports.mine = exports.warp = exports.wait =
 var ethers = require("ethers");
 var ethers_1 = require("ethers");
 var bigdecimal_1 = require("bigdecimal");
-var _chai = require("chai");
-var chaipromise = require("chai-as-promised");
-_chai.use(chaipromise);
-exports.chai = _chai;
+exports.chai = require('chai');
+exports.chai.use(require('chai-as-promised'));
 exports.want = exports.chai.expect;
 function N(n) {
     return ethers.BigNumber.from(n);
