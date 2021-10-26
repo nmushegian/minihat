@@ -94,3 +94,19 @@ export async function mine (hre, t = undefined) {
     method: 'evm_mine'
   })
 }
+
+let _snap
+
+export async function snapshot (hre) {
+  _snap = await hre.network.provider.request({
+    method: 'evm_snapshot'
+  })
+}
+
+export async function revert (hre) {
+  await hre.network.provider.request({
+    method: 'evm_revert',
+    params: [_snap]
+  })
+  await snapshot(hre)
+}

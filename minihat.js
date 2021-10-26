@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.mine = exports.warp = exports.wait = exports.failRevert = exports.fail = exports.send = exports.apy = exports.rad = exports.ray = exports.wad = exports.U256_MAX = exports.RAD = exports.RAY = exports.WAD = exports.BANKYEAR = exports.N = exports.want = exports.chai = void 0;
+exports.revert = exports.snapshot = exports.mine = exports.warp = exports.wait = exports.failRevert = exports.fail = exports.send = exports.apy = exports.rad = exports.ray = exports.wad = exports.U256_MAX = exports.RAD = exports.RAY = exports.WAD = exports.BANKYEAR = exports.N = exports.want = exports.chai = void 0;
 var ethers = require("ethers");
 var ethers_1 = require("ethers");
 var bigdecimal_1 = require("bigdecimal");
@@ -203,3 +203,38 @@ function mine(hre, t) {
     });
 }
 exports.mine = mine;
+var _snap;
+function snapshot(hre) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, hre.network.provider.request({
+                        method: 'evm_snapshot'
+                    })];
+                case 1:
+                    _snap = _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.snapshot = snapshot;
+function revert(hre) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, hre.network.provider.request({
+                        method: 'evm_revert',
+                        params: [_snap]
+                    })];
+                case 1:
+                    _a.sent();
+                    return [4 /*yield*/, snapshot(hre)];
+                case 2:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.revert = revert;
