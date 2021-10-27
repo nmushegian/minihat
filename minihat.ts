@@ -6,41 +6,41 @@ export const chai = require('chai');
 chai.use(require('chai-as-promised'))
 export const want = chai.expect
 
+export const U256_MAX = N(2).pow(N(256)).sub(N(1))
+export const BANKYEAR = ((365 * 24) + 6) * 3600
+
+export const WAD = wad(1)
+export const RAY = ray(1)
+export const RAD = rad(1)
+
 export function N (n: number): BigNumber {
   return ethers.BigNumber.from(n)
 }
 
-export const BANKYEAR = ((365 * 24) + 6) * 3600
-export const WAD = N(10).pow(N(18))
-export const RAY = N(10).pow(N(27))
-export const RAD = N(10).pow(N(45))
-export const U256_MAX = N(2).pow(N(256)).sub(N(1))
+export function fxp(f: number, p: number) {
+  if (p != Math.floor(p) || p < 0) {
+    throw new Error(`npow: 'p' must be a natural number`);
+  }
+  const nd = new BigDecimal(f);
+  const scale = new BigDecimal(N(10).pow(N(p)).toString());
+  const scaled = nd.multiply(scale);
+  const rounded = BigNumber.from(scaled.toBigInteger().toString());
+  return rounded;
+}
 
 export function wad (n: number): BigNumber {
-  const bd = new BigDecimal(n)
-  const WAD_ = new BigDecimal(WAD.toString())
-  const scaled = bd.multiply(WAD_)
-  const rounded = scaled.toBigInteger()
-  return BigNumber.from(rounded.toString())
+  return fxp(n, 18);
 }
 
 export function ray (n: number): BigNumber {
-  const bd = new BigDecimal(n)
-  const RAY_ = new BigDecimal(RAY.toString())
-  const scaled = bd.multiply(RAY_)
-  const rounded = scaled.toBigInteger()
-  return BigNumber.from(rounded.toString())
+  return fxp(n, 27);
 }
 
 export function rad (n: number): BigNumber {
-  const bd = new BigDecimal(n)
-  const RAD_ = new BigDecimal(RAD.toString())
-  const scaled = bd.multiply(RAD_)
-  const rounded = scaled.toBigInteger()
-  return BigNumber.from(rounded.toString())
+  return fxp(n, 45);
 }
 
-// Annualized rate, as a ray
+// Annualized rate to per-second rate, as a ray
 export function apy (n: number): BigNumber {
   // apy = spy^YEAR  ==>  spy = root_{BANKYEAR}(apy)
   //                 ==>  spy = apy ^ (1 / YEAR)
@@ -58,14 +58,6 @@ export async function fail (...args) {
   const err = args[0]
   const sargs = args.slice(1)
   await want(send(...sargs)).rejectedWith(err)
-}
-
-export async function failRevert (...args) {
-  const err = args[0]
-  const sargs = args.slice(1)
-  await want(send(...sargs)).rejectedWith(
-    `VM Exception while processing transaction: reverted with custom error '${err}'`
-  )
 }
 
 export async function wait (hre, t) {

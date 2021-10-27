@@ -36,47 +36,46 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.revert = exports.snapshot = exports.mine = exports.warp = exports.wait = exports.failRevert = exports.fail = exports.send = exports.apy = exports.rad = exports.ray = exports.wad = exports.U256_MAX = exports.RAD = exports.RAY = exports.WAD = exports.BANKYEAR = exports.N = exports.want = exports.chai = void 0;
+exports.revert = exports.snapshot = exports.mine = exports.warp = exports.wait = exports.fail = exports.send = exports.apy = exports.rad = exports.ray = exports.wad = exports.fxp = exports.N = exports.RAD = exports.RAY = exports.WAD = exports.BANKYEAR = exports.U256_MAX = exports.want = exports.chai = void 0;
 var ethers = require("ethers");
 var ethers_1 = require("ethers");
 var bigdecimal_1 = require("bigdecimal");
 exports.chai = require('chai');
 exports.chai.use(require('chai-as-promised'));
 exports.want = exports.chai.expect;
+exports.U256_MAX = N(2).pow(N(256)).sub(N(1));
+exports.BANKYEAR = ((365 * 24) + 6) * 3600;
+exports.WAD = wad(1);
+exports.RAY = ray(1);
+exports.RAD = rad(1);
 function N(n) {
     return ethers.BigNumber.from(n);
 }
 exports.N = N;
-exports.BANKYEAR = ((365 * 24) + 6) * 3600;
-exports.WAD = N(10).pow(N(18));
-exports.RAY = N(10).pow(N(27));
-exports.RAD = N(10).pow(N(45));
-exports.U256_MAX = N(2).pow(N(256)).sub(N(1));
+function fxp(f, p) {
+    if (p != Math.floor(p) || p < 0) {
+        throw new Error("npow: 'p' must be a natural number");
+    }
+    var nd = new bigdecimal_1.BigDecimal(f);
+    var scale = new bigdecimal_1.BigDecimal(N(10).pow(N(p)).toString());
+    var scaled = nd.multiply(scale);
+    var rounded = ethers_1.BigNumber.from(scaled.toBigInteger().toString());
+    return rounded;
+}
+exports.fxp = fxp;
 function wad(n) {
-    var bd = new bigdecimal_1.BigDecimal(n);
-    var WAD_ = new bigdecimal_1.BigDecimal(exports.WAD.toString());
-    var scaled = bd.multiply(WAD_);
-    var rounded = scaled.toBigInteger();
-    return ethers_1.BigNumber.from(rounded.toString());
+    return fxp(n, 18);
 }
 exports.wad = wad;
 function ray(n) {
-    var bd = new bigdecimal_1.BigDecimal(n);
-    var RAY_ = new bigdecimal_1.BigDecimal(exports.RAY.toString());
-    var scaled = bd.multiply(RAY_);
-    var rounded = scaled.toBigInteger();
-    return ethers_1.BigNumber.from(rounded.toString());
+    return fxp(n, 27);
 }
 exports.ray = ray;
 function rad(n) {
-    var bd = new bigdecimal_1.BigDecimal(n);
-    var RAD_ = new bigdecimal_1.BigDecimal(exports.RAD.toString());
-    var scaled = bd.multiply(RAD_);
-    var rounded = scaled.toBigInteger();
-    return ethers_1.BigNumber.from(rounded.toString());
+    return fxp(n, 45);
 }
 exports.rad = rad;
-// Annualized rate, as a ray
+// Annualized rate to per-second rate, as a ray
 function apy(n) {
     // apy = spy^YEAR  ==>  spy = root_{BANKYEAR}(apy)
     //                 ==>  spy = apy ^ (1 / YEAR)
@@ -126,27 +125,6 @@ function fail() {
     });
 }
 exports.fail = fail;
-function failRevert() {
-    var args = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        args[_i] = arguments[_i];
-    }
-    return __awaiter(this, void 0, void 0, function () {
-        var err, sargs;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    err = args[0];
-                    sargs = args.slice(1);
-                    return [4 /*yield*/, (0, exports.want)(send.apply(void 0, sargs)).rejectedWith("VM Exception while processing transaction: reverted with custom error '" + err + "'")];
-                case 1:
-                    _a.sent();
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
-exports.failRevert = failRevert;
 function wait(hre, t) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {

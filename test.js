@@ -1,4 +1,4 @@
-const minihat = { wad, apy, want, send, N } = require('.');
+const mh = { wad, apy, want, send, N } = require('.');
 
 describe('hhs', async ()=>{
   it('meta', async()=>{
@@ -10,6 +10,7 @@ describe('hhs', async ()=>{
     want(n10._isBigNumber).true;
   });
   it('wad', () => {
+    want(mh.WAD.toString()).equals('1' + '0'.repeat(18));
     const a = wad(1)
     want(a.toString()).equals('1' + '0'.repeat(18))
     const b = wad(2.5)
@@ -17,6 +18,8 @@ describe('hhs', async ()=>{
   })
   it('apy', () => {
     const apy0 = apy(1.05)
+    want(apy0.gt(mh.RAY));
+    want(apy0.lt(mh.ray(1.00000001)));
   })
 
 });
