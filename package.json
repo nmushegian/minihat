@@ -1,6 +1,6 @@
 {
   "name": "minihat",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "tiny helpers for hardhat and ethers.js",
   "main": "minihat.js",
   "license": "GPL-3.0",

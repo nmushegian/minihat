@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.revert = exports.snapshot = exports.mine = exports.warp = exports.wait = exports.fail = exports.send = exports.apy = exports.rad = exports.ray = exports.wad = exports.fxp = exports.N = exports.RAD = exports.RAY = exports.WAD = exports.BANKYEAR = exports.U256_MAX = exports.want = exports.chai = void 0;
+exports.revert = exports.snapshot = exports.mine = exports.warp = exports.wait = exports.fail = exports.send = exports.b32 = exports.apy = exports.rad = exports.ray = exports.wad = exports.fxp = exports.N = exports.RAD = exports.RAY = exports.WAD = exports.BANKYEAR = exports.U256_MAX = exports.want = exports.chai = void 0;
 var ethers = require("ethers");
 var ethers_1 = require("ethers");
 var bigdecimal_1 = require("bigdecimal");
@@ -82,6 +82,22 @@ function apy(n) {
     return ray(Math.pow(n, 1 / exports.BANKYEAR));
 }
 exports.apy = apy;
+function b32(arg) {
+    if (arg._isBigNumber) {
+        var hex = arg.toHexString();
+        var buff = Buffer.from(hex.slice(2), 'hex');
+        var b32_1 = ethers.utils.zeroPad(buff, 32);
+        return b32_1;
+    }
+    else if (typeof (arg) === 'string') {
+        var b32_2 = Buffer.from(arg + '\0'.repeat(32 - arg.length));
+        return b32_2;
+    }
+    else {
+        throw new Error("b32 takes a BigNumber or string, got ".concat(arg, ", a ").concat(typeof (arg)));
+    }
+}
+exports.b32 = b32;
 function send() {
     var args = [];
     for (var _i = 0; _i < arguments.length; _i++) {

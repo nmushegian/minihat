@@ -2,7 +2,7 @@ import * as ethers from 'ethers'
 import { BigNumber } from 'ethers'
 import { BigDecimal } from 'bigdecimal'
 
-export const chai = require('chai');
+export const chai = require('chai')
 chai.use(require('chai-as-promised'))
 export const want = chai.expect
 
@@ -17,27 +17,27 @@ export function N (n: number): BigNumber {
   return ethers.BigNumber.from(n)
 }
 
-export function fxp(f: number, p: number) {
+export function fxp (f: number, p: number) {
   if (p != Math.floor(p) || p < 0) {
-    throw new Error(`npow: 'p' must be a natural number`);
+    throw new Error('npow: \'p\' must be a natural number')
   }
-  const nd = new BigDecimal(f);
-  const scale = new BigDecimal(N(10).pow(N(p)).toString());
-  const scaled = nd.multiply(scale);
-  const rounded = BigNumber.from(scaled.toBigInteger().toString());
-  return rounded;
+  const nd = new BigDecimal(f)
+  const scale = new BigDecimal(N(10).pow(N(p)).toString())
+  const scaled = nd.multiply(scale)
+  const rounded = BigNumber.from(scaled.toBigInteger().toString())
+  return rounded
 }
 
 export function wad (n: number): BigNumber {
-  return fxp(n, 18);
+  return fxp(n, 18)
 }
 
 export function ray (n: number): BigNumber {
-  return fxp(n, 27);
+  return fxp(n, 27)
 }
 
 export function rad (n: number): BigNumber {
-  return fxp(n, 45);
+  return fxp(n, 45)
 }
 
 // Annualized rate to per-second rate, as a ray
@@ -45,6 +45,20 @@ export function apy (n: number): BigNumber {
   // apy = spy^YEAR  ==>  spy = root_{BANKYEAR}(apy)
   //                 ==>  spy = apy ^ (1 / YEAR)
   return ray(Math.pow(n, 1 / BANKYEAR))
+}
+
+export function b32 (arg: any): Uint8Array {
+  if (arg._isBigNumber) {
+    const hex = arg.toHexString()
+    const buff = Buffer.from(hex.slice(2), 'hex')
+    const b32 = ethers.utils.zeroPad(buff, 32)
+    return b32
+  } else if (typeof (arg) === 'string') {
+    const b32 = Buffer.from(arg + '\0'.repeat(32 - arg.length))
+    return b32
+  } else {
+    throw new Error(`b32 takes a BigNumber or string, got ${arg}, a ${typeof (arg)}`)
+  }
 }
 
 export async function send (...args) {
