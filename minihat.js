@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.revert = exports.snapshot = exports.mine = exports.warp = exports.wait = exports.fail = exports.send = exports.b32 = exports.apy = exports.rad = exports.ray = exports.wad = exports.fxp = exports.N = exports.RAD = exports.RAY = exports.WAD = exports.BANKYEAR = exports.U256_MAX = exports.want = exports.chai = void 0;
+exports.hear = exports.revert = exports.snapshot = exports.mine = exports.warp = exports.wait = exports.fail = exports.send = exports.b32 = exports.apy = exports.rad = exports.ray = exports.wad = exports.fxp = exports.N = exports.RAD = exports.RAY = exports.WAD = exports.BANKYEAR = exports.U256_MAX = exports.want = exports.chai = void 0;
 var ethers = require("ethers");
 var ethers_1 = require("ethers");
 var bigdecimal_1 = require("bigdecimal");
@@ -54,7 +54,7 @@ function N(n) {
 exports.N = N;
 function fxp(f, p) {
     if (p != Math.floor(p) || p < 0) {
-        throw new Error("npow: 'p' must be a natural number");
+        throw new Error('npow: \'p\' must be a natural number');
     }
     var nd = new bigdecimal_1.BigDecimal(f);
     var scale = new bigdecimal_1.BigDecimal(N(10).pow(N(p)).toString());
@@ -230,3 +230,17 @@ function revert(hre) {
     });
 }
 exports.revert = revert;
+function hear(receipt, eventName, args, data) {
+    if (args === void 0) { args = []; }
+    if (data === void 0) { data = '0x'; }
+    var found = receipt.events.some(function (event) {
+        if (event.event != eventName || data != event.data)
+            return false;
+        return args.every(function (arg, i) {
+            var cmp = eventName == undefined ? event.topics[i] : event.args[i];
+            return typeof arg.eq === 'function' ? arg.eq(cmp) : arg == cmp;
+        });
+    });
+    (0, exports.want)(found).to.equal(true, "No '".concat(eventName, "' events found with args ").concat(args, " and data ").concat(data));
+}
+exports.hear = hear;

@@ -112,3 +112,14 @@ export async function revert (hre) {
   })
   await snapshot(hre)
 }
+
+export function hear (receipt, eventName, args = [], data = '0x') {
+  let found = receipt.events.some( event => {
+    if (event.event != eventName || data != event.data) return false
+    return args.every((arg, i) => {
+      const cmp = eventName == undefined ? event.topics[i] : event.args[i]
+      return typeof arg.eq === 'function' ? arg.eq(cmp) : arg == cmp
+    })
+  })
+  want(found).to.equal(true, `No '${eventName}' events found with args ${args} and data ${data}`);
+}
